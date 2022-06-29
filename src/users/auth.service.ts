@@ -1,10 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { scrypt as _scrypt, randomBytes } from 'crypto';
-import { Repository } from 'typeorm';
 import { promisify } from 'util';
-// Entities
-import { User } from './user.entity';
 // Services
 import { UsersService } from './users.service';
 
@@ -12,10 +8,7 @@ const scrypt = promisify(_scrypt);
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private UserService: UsersService,
-    @InjectRepository(User) private repo: Repository<User>,
-  ) {}
+  constructor(private UserService: UsersService) {}
 
   async signup(email: string, password: string) {
     const users = await this.UserService.find(email);
