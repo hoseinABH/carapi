@@ -8,6 +8,7 @@ import {
   Post,
   Query,
   Session,
+  UseGuards,
 } from '@nestjs/common';
 // Services
 import { UsersService } from './users.service';
@@ -18,6 +19,12 @@ import { UpdateUserDto } from './dtos/update-user.dto';
 import { UserDto } from './dtos/user.dto';
 // Interceptors
 import { Serilize } from 'src/interceptors/serialize.interceptor';
+// Decorators
+import { CurrentUser } from './decorators/current-user.decorator';
+// Entities
+import { User } from './user.entity';
+// Guards
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('auth')
 @Serilize(UserDto)
@@ -28,8 +35,8 @@ export class UsersController {
   ) {}
 
   @Get('/whoami')
-  whoami(@Session() session: any) {
-    return this.usersService.findOne(session.userId);
+  whoami(@CurrentUser() user: User) {
+    return user;
   }
 
   @Post('/signout')
@@ -57,6 +64,7 @@ export class UsersController {
   }
 
   @Get()
+  @UseGuards(AuthGuard)
   getAllUsers(@Query('email') email: string) {
     return this.usersService.find(email);
   }
